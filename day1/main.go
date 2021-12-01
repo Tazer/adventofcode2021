@@ -36,8 +36,9 @@ func main() {
 	}
 
 	res := countIncrements(inputs)
+	res2 := countIncrementsSliding(inputs)
 
-	log.Printf("Result: %d", res)
+	log.Printf("Result: %d res2: %d", res, res2)
 
 }
 
@@ -58,4 +59,14 @@ func countIncrements(inputs []int) int {
 		prevValue = i
 	}
 	return incCount
+}
+
+func countIncrementsSliding(inputs []int) int {
+	mergedCount := []int{}
+	for i, in := range inputs[2:] {
+		sum := in + inputs[i] + inputs[i+1]
+		mergedCount = append(mergedCount, sum)
+	}
+
+	return countIncrements(mergedCount)
 }
