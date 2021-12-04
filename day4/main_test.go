@@ -48,4 +48,16 @@ func TestPlayBingo(t *testing.T) {
 	s := game.Play()
 
 	assert.Equal(t, 4512, s)
+
+	file, err = os.Open("input_test.txt")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer file.Close()
+
+	scanner = bufio.NewScanner(file)
+	game = parseBingoGame(scanner)
+	s2 := game.PlayLastWinner()
+
+	assert.Equal(t, 1924, s2)
 }

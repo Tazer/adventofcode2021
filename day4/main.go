@@ -16,6 +16,7 @@ type (
 
 	BingoBoard struct {
 		Numbers map[int]map[int]BingoNumber
+		HaveWon bool
 	}
 
 	BingoNumber struct {
@@ -33,6 +34,9 @@ func NewBingoGame(numbersDrawn []int, bingoBoards []BingoBoard) *BingoGame {
 }
 
 func (bb *BingoBoard) Mark(number int) {
+	if bb.HaveWon {
+		return
+	}
 	for x, row := range bb.Numbers {
 		for y, bn := range row {
 			if bn.Value == number {
@@ -46,6 +50,10 @@ func (bb *BingoBoard) Mark(number int) {
 }
 
 func (bb *BingoBoard) Won() bool {
+
+	if bb.HaveWon {
+		return false
+	}
 
 	correct := 0
 	winning := false
@@ -62,7 +70,7 @@ func (bb *BingoBoard) Won() bool {
 	}
 
 	if winning {
-		log.Printf("winning board %v", bb)
+		bb.HaveWon = true
 		return true
 	}
 	for x := 0; x < 5; x++ {
@@ -78,7 +86,7 @@ func (bb *BingoBoard) Won() bool {
 		}
 	}
 	if winning {
-		log.Printf("winning board %v", bb)
+		bb.HaveWon = true
 		return true
 	}
 	return false
@@ -110,6 +118,34 @@ func (b *BingoGame) Play() int {
 	return 0
 }
 
+type WinningBoard struct {
+	Number int
+	Board  BingoBoard
+}
+
+func (w *WinningBoard) Score() int {
+	return w.Board.Score(w.Number)
+}
+
+func (b *BingoGame) PlayLastWinner() int {
+
+	boardsWinning := []WinningBoard{}
+
+	for _, d := range b.numbersDrawn {
+		for i, bb := range b.bingoBoards {
+			b.bingoBoards[i].Mark(d)
+			if b.bingoBoards[i].Won() {
+				boardsWinning = append(boardsWinning, WinningBoard{
+					Number: d,
+					Board:  bb,
+				})
+			}
+		}
+	}
+
+	return boardsWinning[len(boardsWinning)-1].Score()
+}
+
 func main() {
 	file, err := os.Open("input.txt")
 	if err != nil {
@@ -124,6 +160,20 @@ func main() {
 	s := b.Play()
 
 	log.Printf("Played bingo %d", s)
+
+	file, err = os.Open("input.txt")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer file.Close()
+
+	scanner = bufio.NewScanner(file)
+
+	b = parseBingoGame(scanner)
+
+	s = b.PlayLastWinner()
+
+	log.Printf("Played bingo last winner %d", s)
 }
 
 func parseBingoGame(scanner *bufio.Scanner) BingoGame {
