@@ -37,6 +37,13 @@ func main() {
 	if err := scanner.Err(); err != nil {
 		log.Fatal(err)
 	}
+
+	g := NewGrid(sLines)
+	g.MarkPositions()
+
+	res := g.GetDangerousPositions()
+
+	log.Printf("res %d", res)
 }
 
 type Line struct {
@@ -54,14 +61,14 @@ func NewGrid(lines []string) *Grid {
 
 	for _, line := range lines {
 		ab := strings.Split(line, "->")
-
+		log.Printf("ab %s", ab)
 		x1, y1 := getXY(ab[0])
 		x2, y2 := getXY(ab[1])
 
 		if x1 == x2 || y1 == y2 {
 
 			l := Line{X1: x1, Y1: y1, X2: x2, Y2: y2}
-
+			log.Printf("adding line %v", l)
 			dlines = append(dlines, l)
 		}
 	}
@@ -73,40 +80,71 @@ func NewGrid(lines []string) *Grid {
 
 func (g *Grid) MarkPositions() {
 	for _, l := range g.Lines {
-		//TODO check whats bigger and smaller
+		log.Printf("proccessing line %v", l)
 		if l.X1 == l.X2 {
-			for y := l.Y1; y <= l.Y2; y++ {
+
+			big := l.Y2
+			small := l.Y1
+
+			if l.Y1 > l.Y2 {
+				big = l.Y1
+				small = l.Y2
+			}
+
+			for y := small; y <= big; y++ {
 				if g.Positions == nil {
 					g.Positions = map[int]map[int]int{}
 				}
-				if g.Positions[l.X1] == nil {
-					g.Positions[l.X1] = map[int]int{}
+				if g.Positions[y] == nil {
+					g.Positions[y] = map[int]int{}
 				}
-				g.Positions[l.X1][y] += 1
+				log.Printf("adding Y [%d][%d]", y, l.X1)
+				g.Positions[y][l.X1] += 1
 			}
 		} else {
-			for x := l.X1; x <= l.X2; x++ {
+
+			big := l.X2
+			small := l.X1
+
+			if l.X1 > l.X2 {
+				big = l.X1
+				small = l.X2
+			}
+
+			for x := small; x <= big; x++ {
 				if g.Positions == nil {
 					g.Positions = map[int]map[int]int{}
 				}
-				if g.Positions[x] == nil {
-					g.Positions[x] = map[int]int{}
+				if g.Positions[l.Y1] == nil {
+					g.Positions[l.Y1] = map[int]int{}
 				}
-				g.Positions[x][l.Y1] += 1
+				log.Printf("adding X [%d][%d]", l.Y1, x)
+				g.Positions[l.Y1][x] += 1
 			}
 		}
 	}
 }
 
 func (g *Grid) GetDangerousPositions() int {
-	return 0
+	count := 0
+	for _, r := range g.Positions {
+		for _, c := range r {
+			if c >= 2 {
+				count++
+			}
+		}
+
+	}
+	return count
 }
 
 func getXY(s string) (int, int) {
 	s = strings.TrimSpace(s)
 
-	x, _ := strconv.Atoi(string(s[0]))
-	y, _ := strconv.Atoi(string(s[1]))
+	split := strings.Split(s, ",")
+
+	x, _ := strconv.Atoi(string(split[0]))
+	y, _ := strconv.Atoi(string(split[1]))
 
 	return x, y
 

@@ -4,8 +4,9 @@ import (
 	"bufio"
 	"log"
 	"os"
-	"strconv"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestGrid(t *testing.T) {
@@ -17,24 +18,26 @@ func TestGrid(t *testing.T) {
 
 	scanner := bufio.NewScanner(file)
 
-	lines := map[int][]int{}
-	sLines := []string{}
+	lines := []string{}
 
 	for scanner.Scan() {
 		line := scanner.Text()
-		sLines = append(sLines, line)
-
-		for i, l := range line {
-			iL, _ := strconv.Atoi(string(l))
-			if lines[i] == nil {
-				lines[i] = []int{}
-			}
-			lines[i] = append(lines[i], iL)
-		}
+		lines = append(lines, line)
 	}
 
 	if err := scanner.Err(); err != nil {
 		log.Fatal(err)
 	}
+
+	g := NewGrid(lines)
+
+	g.MarkPositions()
+
+	log.Printf("pos: %+v", g.Positions)
+	assert.Equal(t, 1, g.Positions[4][1])
+
+	res := g.GetDangerousPositions()
+
+	assert.Equal(t, 5, res)
 
 }
