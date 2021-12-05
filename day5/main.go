@@ -73,7 +73,28 @@ func NewGrid(lines []string) *Grid {
 
 func (g *Grid) MarkPositions() {
 	for _, l := range g.Lines {
-
+		//TODO check whats bigger and smaller
+		if l.X1 == l.X2 {
+			for y := l.Y1; y <= l.Y2; y++ {
+				if g.Positions == nil {
+					g.Positions = map[int]map[int]int{}
+				}
+				if g.Positions[l.X1] == nil {
+					g.Positions[l.X1] = map[int]int{}
+				}
+				g.Positions[l.X1][y] += 1
+			}
+		} else {
+			for x := l.X1; x <= l.X2; x++ {
+				if g.Positions == nil {
+					g.Positions = map[int]map[int]int{}
+				}
+				if g.Positions[x] == nil {
+					g.Positions[x] = map[int]int{}
+				}
+				g.Positions[x][l.Y1] += 1
+			}
+		}
 	}
 }
 
