@@ -45,7 +45,12 @@ func TestGrid(t *testing.T) {
 	g.MarkPositions(true)
 
 	log.Printf("pos: %+v", g.Positions)
-	//assert.Equal(t, 1, g.Positions[2][4])
+	assert.Equal(t, 1, g.Positions[0][2], "0,2")
+	assert.Equal(t, 1, g.Positions[1][3], "1,3")
+	assert.Equal(t, 1, g.Positions[2][4], "2,4")
+	assert.Equal(t, 1, g.Positions[3][3], "3,3")
+	assert.Equal(t, 1, g.Positions[4][2], "4,1")
+	assert.Equal(t, 1, g.Positions[4][2], "4,2")
 	assert.Equal(t, 2, g.Positions[2][2])
 	assert.Equal(t, 3, g.Positions[4][4])
 	assert.Equal(t, 1, g.Positions[4][5])

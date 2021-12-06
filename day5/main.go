@@ -77,7 +77,7 @@ func NewGrid(lines []string) *Grid {
 
 			l := Line{X1: x1, Y1: y1, X2: x2, Y2: y2}
 			slines = append(slines, l)
-		} else if x1 == y1 && x2 == y2 || x1 == y2 && x2 == y1 {
+		} else if x1 == y1 && x2 == y2 || x1 == y2 && x2 == y1 || y2%x1 == 0 && y1%x2 == 0 {
 			l := Line{X1: x1, Y1: y1, X2: x2, Y2: y2}
 			log.Printf("adding diagonal line %v", l)
 			dlines = append(dlines, l)
