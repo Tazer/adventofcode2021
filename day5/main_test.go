@@ -60,3 +60,15 @@ func TestGrid(t *testing.T) {
 	assert.Equal(t, 12, res)
 
 }
+
+func TestDLines(t *testing.T) {
+	g := NewGrid([]string{})
+
+	g.DLines = []Line{{X1: 6, Y1: 4, X2: 2, Y2: 0}}
+
+	g.SetDPositions()
+
+	assert.Equal(t, 1, g.Positions[0][2], "0,2")
+	assert.Equal(t, 1, g.Positions[1][3], "1,3")
+	assert.Equal(t, 1, g.Positions[2][4], "2,4")
+}

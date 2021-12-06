@@ -136,42 +136,45 @@ func (g *Grid) MarkPositions(dLines bool) {
 	}
 	if dLines {
 		log.Printf("whats dlines %+v", g.DLines)
-		for _, l := range g.DLines {
-			ybig := l.Y2
-			ysmall := l.Y1
-			startX := l.X1
+		g.SetDPositions()
+	}
+}
+func (g *Grid) SetDPositions() {
+	for _, l := range g.DLines {
+		ybig := l.Y2
+		ysmall := l.Y1
+		startX := l.X1
+		v := 0
 
-			if l.Y1 > l.Y2 {
-				ybig = l.Y1
-				ysmall = l.Y2
-				startX = l.X2
-			}
-
-			//xbig := l.X2
-			// xsmall := l.X1
-
-			// if l.X1 > l.X2 {
-			// 	//xbig = l.X1
-			// 	xsmall = l.X2
-			// }
-
-			for y := ysmall; y <= ybig; y++ {
-				if g.Positions == nil {
-					g.Positions = map[int]map[int]int{}
-				}
-				if g.Positions[y] == nil {
-					g.Positions[y] = map[int]int{}
-				}
-				g.Positions[y][startX] += 1
-				log.Printf("adding y[%d] x[%d]", y, startX)
-				if startX > y {
-					startX--
-				} else {
-					startX++
-				}
-			}
-
+		if l.X1 > l.X2 {
+			v = -1
+		} else {
+			v = 1
 		}
+
+		if l.Y1 > l.Y2 {
+			ybig = l.Y1
+			ysmall = l.Y2
+			startX = l.X2
+			if l.X2 > l.X1 {
+				v = -1
+			} else {
+				v = 1
+			}
+		}
+
+		for y := ysmall; y <= ybig; y++ {
+			if g.Positions == nil {
+				g.Positions = map[int]map[int]int{}
+			}
+			if g.Positions[y] == nil {
+				g.Positions[y] = map[int]int{}
+			}
+			g.Positions[y][startX] += 1
+			log.Printf("adding y[%d] x[%d]", y, startX)
+			startX += v
+		}
+
 	}
 }
 
