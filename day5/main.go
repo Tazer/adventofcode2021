@@ -39,11 +39,18 @@ func main() {
 	}
 
 	g := NewGrid(sLines)
-	g.MarkPositions()
+	g.MarkPositions(false)
 
 	res := g.GetDangerousPositions()
 
 	log.Printf("res %d", res)
+
+	g = NewGrid(sLines)
+	g.MarkPositions(true)
+
+	res = g.GetDangerousPositions()
+
+	log.Printf("res2 %d", res)
 }
 
 type Line struct {
@@ -53,10 +60,12 @@ type Line struct {
 type Grid struct {
 	Positions map[int]map[int]int
 	Lines     []Line
+	DLines    []Line
 }
 
 func NewGrid(lines []string) *Grid {
 
+	slines := []Line{}
 	dlines := []Line{}
 
 	for _, line := range lines {
@@ -68,19 +77,22 @@ func NewGrid(lines []string) *Grid {
 		if x1 == x2 || y1 == y2 {
 
 			l := Line{X1: x1, Y1: y1, X2: x2, Y2: y2}
-			log.Printf("adding line %v", l)
+			slines = append(slines, l)
+		} else if x1 == y1 && x2 == y2 || x1 == y2 && x2 == y1 {
+			l := Line{X1: x1, Y1: y1, X2: x2, Y2: y2}
+			log.Printf("adding diagonal line %v", l)
 			dlines = append(dlines, l)
 		}
 	}
 
 	return &Grid{
-		Lines: dlines,
+		Lines:  slines,
+		DLines: dlines,
 	}
 }
 
-func (g *Grid) MarkPositions() {
+func (g *Grid) MarkPositions(dLines bool) {
 	for _, l := range g.Lines {
-		log.Printf("proccessing line %v", l)
 		if l.X1 == l.X2 {
 
 			big := l.Y2
@@ -98,7 +110,6 @@ func (g *Grid) MarkPositions() {
 				if g.Positions[y] == nil {
 					g.Positions[y] = map[int]int{}
 				}
-				log.Printf("adding Y [%d][%d]", y, l.X1)
 				g.Positions[y][l.X1] += 1
 			}
 		} else {
@@ -118,9 +129,47 @@ func (g *Grid) MarkPositions() {
 				if g.Positions[l.Y1] == nil {
 					g.Positions[l.Y1] = map[int]int{}
 				}
-				log.Printf("adding X [%d][%d]", l.Y1, x)
 				g.Positions[l.Y1][x] += 1
 			}
+		}
+	}
+	if dLines {
+		log.Printf("whats dlines %+v", g.DLines)
+		for _, l := range g.DLines {
+			ybig := l.Y2
+			ysmall := l.Y1
+			startX := l.X1
+
+			if l.Y1 > l.Y2 {
+				ybig = l.Y1
+				ysmall = l.Y2
+				startX = l.X2
+			}
+
+			//xbig := l.X2
+			// xsmall := l.X1
+
+			// if l.X1 > l.X2 {
+			// 	//xbig = l.X1
+			// 	xsmall = l.X2
+			// }
+
+			for y := ysmall; y <= ybig; y++ {
+				if g.Positions == nil {
+					g.Positions = map[int]map[int]int{}
+				}
+				if g.Positions[y] == nil {
+					g.Positions[y] = map[int]int{}
+				}
+				g.Positions[y][startX] += 1
+				log.Printf("adding y[%d] x[%d]", y, startX)
+				if startX > y {
+					startX--
+				} else {
+					startX++
+				}
+			}
+
 		}
 	}
 }
