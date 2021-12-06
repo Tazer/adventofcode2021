@@ -83,6 +83,8 @@ func NewGrid(lines []string) *Grid {
 			dlines = append(dlines, l)
 		} else {
 			log.Printf("skipping line [%d,%d -> %d,%d]", x1, y1, x2, y2)
+			l := Line{X1: x1, Y1: y1, X2: x2, Y2: y2}
+			dlines = append(dlines, l)
 		}
 	}
 

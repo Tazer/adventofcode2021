@@ -52,7 +52,10 @@ func TestGrid(t *testing.T) {
 	assert.Equal(t, 1, g.Positions[4][2], "4,1")
 	assert.Equal(t, 1, g.Positions[4][2], "4,2")
 	assert.Equal(t, 2, g.Positions[2][2])
+	assert.Equal(t, 2, g.Positions[4][3], "4,3")
 	assert.Equal(t, 3, g.Positions[4][4])
+	assert.Equal(t, 3, g.Positions[4][6], "4,6")
+	assert.Equal(t, 2, g.Positions[3][7], "3,7")
 	assert.Equal(t, 1, g.Positions[4][5])
 
 	res = g.GetDangerousPositions()
