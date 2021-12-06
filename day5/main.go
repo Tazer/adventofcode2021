@@ -70,7 +70,6 @@ func NewGrid(lines []string) *Grid {
 
 	for _, line := range lines {
 		ab := strings.Split(line, "->")
-		log.Printf("ab %s", ab)
 		x1, y1 := getXY(ab[0])
 		x2, y2 := getXY(ab[1])
 
@@ -82,6 +81,8 @@ func NewGrid(lines []string) *Grid {
 			l := Line{X1: x1, Y1: y1, X2: x2, Y2: y2}
 			log.Printf("adding diagonal line %v", l)
 			dlines = append(dlines, l)
+		} else {
+			log.Printf("skipping line [%d,%d -> %d,%d]", x1, y1, x2, y2)
 		}
 	}
 
